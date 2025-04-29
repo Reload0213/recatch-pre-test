@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 import { Form, Modal, Typography, Space, Button, Divider } from 'antd';
 import dayjs from 'dayjs';
@@ -41,6 +41,48 @@ const customizeRequiredMark = (label: React.ReactNode, { required }: { required:
 
 const RecordFormModal = ({ isOpen, onClose, onSubmit, formValues }: RecordFormModalProps) => {
     const [form] = Form.useForm();
+    const [isFormValid, setIsFormValid] = useState(false);
+
+    const handleModalClose = useCallback(() => {
+        form.resetFields();
+        onClose();
+        setIsFormValid(false);
+    }, [form, onClose, setIsFormValid]);
+
+    const handleSubmit = useCallback(
+        (values: any) => {
+            const formattedValues = {
+                ...values,
+                joinDate: values.joinDate ? dayjs(values.joinDate).format('YYYY-MM-DD') : null,
+            };
+            onSubmit(formattedValues);
+            handleModalClose();
+            setIsFormValid(false);
+        },
+        [onSubmit, handleModalClose]
+    );
+
+    const handleValuesChange = useCallback(() => {
+        // 필수 필드들만 검증
+        const requiredFields = FIELD_CONFIGS.filter((field) => field.required).map((field) => field.dataIndex);
+
+        if (requiredFields.length === 0) {
+            setIsFormValid(true);
+            return;
+        }
+
+        form.validateFields(requiredFields)
+            .then(() => {
+                setIsFormValid(true);
+            })
+            .catch((errors: { errorFields: Array<{ name: string[] }> }) => {
+                // 실제 필수 필드에 대한 오류가 있는지 확인
+                const hasRequiredFieldErrors = errors.errorFields.some((field) =>
+                    requiredFields.includes(field.name[0])
+                );
+                setIsFormValid(!hasRequiredFieldErrors);
+            });
+    }, [form, setIsFormValid]);
 
     useEffect(() => {
         if (formValues) {
@@ -48,24 +90,12 @@ const RecordFormModal = ({ isOpen, onClose, onSubmit, formValues }: RecordFormMo
                 ...formValues,
                 joinDate: formValues.joinDate ? dayjs(formValues.joinDate) : null,
             });
+            handleValuesChange(); // 초기값이 있을 때 유효성 검사 실행
         } else {
             form.resetFields();
+            setIsFormValid(false);
         }
-    }, [formValues, form]);
-
-    const handleModalClose = () => {
-        form.resetFields();
-        onClose();
-    };
-
-    const handleSubmit = (values: any) => {
-        const formattedValues = {
-            ...values,
-            joinDate: values.joinDate ? dayjs(values.joinDate).format('YYYY-MM-DD') : null,
-        };
-        onSubmit(formattedValues);
-        handleModalClose();
-    };
+    }, [formValues, form, handleValuesChange]);
 
     return (
         <RecordStyledModal
@@ -79,7 +109,7 @@ const RecordFormModal = ({ isOpen, onClose, onSubmit, formValues }: RecordFormMo
             footer={
                 <Space>
                     <Button onClick={handleModalClose}>취소</Button>
-                    <Button type="primary" onClick={() => form.submit()}>
+                    <Button type="primary" onClick={() => form.submit()} disabled={!isFormValid}>
                         저장
                     </Button>
                 </Space>
@@ -94,6 +124,7 @@ const RecordFormModal = ({ isOpen, onClose, onSubmit, formValues }: RecordFormMo
                 onFinish={handleSubmit}
                 requiredMark={customizeRequiredMark}
                 style={{ padding: '16px' }}
+                onValuesChange={handleValuesChange}
             >
                 {FIELD_CONFIGS.map((field) => (
                     <RecordFormRender key={field.dataIndex} field={field} />
