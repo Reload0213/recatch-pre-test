@@ -21,20 +21,20 @@ export const OptionsFilterMenu: React.FC<OptionsFilterMenuProps> = ({
     filteredState,
     onFilterChange,
 }) => {
-    return (
-        <Menu selectable={false} style={{ border: 'none', boxShadow: 'none' }}>
-            {options.map((option, idx) => (
-                <Menu.Item key={idx} style={{ padding: '8px 12px', margin: 0, height: 'auto' }}>
-                    <Checkbox
-                        checked={isFilterOptionSelected(dataIndex, option, filteredState)}
-                        onChange={() => onFilterChange(dataIndex, option)}
-                    >
-                        {String(option)}
-                    </Checkbox>
-                </Menu.Item>
-            ))}
-        </Menu>
-    );
+    const menuItems = options.map((option, idx) => ({
+        key: idx.toString(),
+        label: (
+            <Checkbox
+                checked={isFilterOptionSelected(dataIndex, option, filteredState)}
+                onChange={() => onFilterChange(dataIndex, option)}
+            >
+                {String(option)}
+            </Checkbox>
+        ),
+        style: { padding: '8px 12px', margin: 0, height: 'auto' },
+    }));
+
+    return <Menu selectable={false} style={{ border: 'none', boxShadow: 'none' }} items={menuItems} />;
 };
 
 export default OptionsFilterMenu;
