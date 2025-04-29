@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { create, StateCreator } from 'zustand';
+import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 // types
@@ -9,11 +9,6 @@ export interface RecordState {
     records: Record[];
     isModalOpen: boolean;
     editingRecord: Record | null;
-    addRecord: (record: Record) => void;
-    updateRecord: (record: Record) => void;
-    deleteRecord: (id: string) => void;
-    setModalOpen: (isOpen: boolean) => void;
-    setEditingRecord: (record: Record | null) => void;
 }
 
 const initialRecords: Record[] = [
@@ -37,58 +32,25 @@ const initialRecords: Record[] = [
     },
 ];
 
-const createStore: StateCreator<RecordState> = (set) => ({
-    records: [],
+const initialState: RecordState = {
+    records: initialRecords,
     isModalOpen: false,
-    editingRecord: null as Record | null,
-    addRecord: (record) =>
-        set((state) => ({
-            records: [...state.records, { ...record, id: uuidv4() }],
-        })),
-    updateRecord: (record) =>
-        set((state) => ({
-            records: state.records.map((r) => (r.id === record.id ? record : r)),
-        })),
-    deleteRecord: (id) =>
-        set((state) => ({
-            records: state.records.filter((r) => r.id !== id),
-        })),
-    setModalOpen: (isOpen) =>
-        set(() => ({
-            isModalOpen: isOpen,
-        })),
-    setEditingRecord: (record) =>
-        set(() => ({
-            editingRecord: record,
-        })),
-});
+    editingRecord: null,
+};
 
 function createRecordStore() {
     const STORAGE_TYPE = process.env.REACT_APP_STORAGE_TYPE;
 
     if (STORAGE_TYPE === 'local-storage') {
         return create<RecordState>()(
-            persist(createStore, {
+            persist(() => initialState, {
                 name: 'records-storage',
                 storage: createJSONStorage(() => localStorage),
-                onRehydrateStorage: () => (state) => {
-                    if (state && state.records.length === 0) {
-                        state.records = initialRecords;
-                    }
-                },
             })
         );
-    } else if (STORAGE_TYPE === 'in-memory') {
-        return create<RecordState>()((set, get, store) => ({
-            ...createStore(set, get, store),
-            records: initialRecords,
-        }));
+    } else {
+        return create<RecordState>()(() => initialState);
     }
-
-    return create<RecordState>()((set, get, store) => ({
-        ...createStore(set, get, store),
-        records: initialRecords,
-    }));
 }
 
 export const recordStore = createRecordStore();

@@ -1,18 +1,41 @@
 import { useCallback } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
 import { recordStore } from '../store/recordStore';
 import { Record } from '../types/record.d';
 
 export function useRecords() {
-    const records = recordStore((state) => state.records);
-    const isModalOpen = recordStore((state) => state.isModalOpen);
-    const editingRecord = recordStore((state) => state.editingRecord);
+    const { records, isModalOpen, editingRecord } = recordStore();
 
-    const addRecord = recordStore((state) => state.addRecord);
-    const updateRecord = recordStore((state) => state.updateRecord);
-    const deleteRecord = recordStore((state) => state.deleteRecord);
-    const setModalOpen = recordStore((state) => state.setModalOpen);
-    const setEditingRecord = recordStore((state) => state.setEditingRecord);
+    const addRecord = useCallback((record: Record) => {
+        recordStore.setState((state) => ({
+            records: [...state.records, { ...record, id: uuidv4() }],
+        }));
+    }, []);
+
+    const updateRecord = useCallback((record: Record) => {
+        recordStore.setState((state) => ({
+            records: state.records.map((r) => (r.id === record.id ? record : r)),
+        }));
+    }, []);
+
+    const deleteRecord = useCallback((id: string) => {
+        recordStore.setState((state) => ({
+            records: state.records.filter((r) => r.id !== id),
+        }));
+    }, []);
+
+    const setModalOpen = useCallback((isOpen: boolean) => {
+        recordStore.setState({
+            isModalOpen: isOpen,
+        });
+    }, []);
+
+    const setEditingRecord = useCallback((record: Record | null) => {
+        recordStore.setState({
+            editingRecord: record,
+        });
+    }, []);
 
     const openModal = useCallback(() => {
         setEditingRecord(null);
@@ -32,27 +55,6 @@ export function useRecords() {
         [setEditingRecord, setModalOpen]
     );
 
-    const handleAddRecord = useCallback(
-        (record: Record) => {
-            addRecord(record);
-        },
-        [addRecord]
-    );
-
-    const handleUpdateRecord = useCallback(
-        (record: Record) => {
-            updateRecord(record);
-        },
-        [updateRecord]
-    );
-
-    const handleDeleteRecord = useCallback(
-        (id: string) => {
-            deleteRecord(id);
-        },
-        [deleteRecord]
-    );
-
     return {
         records,
         isModalOpen,
@@ -60,8 +62,8 @@ export function useRecords() {
         openModal,
         closeModal,
         editRecord: handleEditRecord,
-        addRecord: handleAddRecord,
-        updateRecord: handleUpdateRecord,
-        deleteRecord: handleDeleteRecord,
+        addRecord,
+        updateRecord,
+        deleteRecord,
     };
 }
