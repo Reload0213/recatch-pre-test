@@ -16,6 +16,7 @@ declare module 'styled-components' {
                 primary: string;
                 secondary: string;
             };
+            border: string;
         };
         spacing: {
             xs: string;
@@ -31,12 +32,17 @@ declare module 'styled-components' {
             lg: string;
             xl: string;
         };
+        borderRadius: {
+            sm: string;
+            md: string;
+            lg: string;
+        };
     }
 }
 
 export const theme: DefaultTheme = {
     colors: {
-        primary: '#1890ff',
+        primary: '#1677ff',
         secondary: '#52c41a',
         error: '#ff4d4f',
         warning: '#faad14',
@@ -49,6 +55,7 @@ export const theme: DefaultTheme = {
             primary: '#ffffff',
             secondary: '#f5f5f5',
         },
+        border: '#d9d9d9',
     },
     spacing: {
         xs: '4px',
@@ -64,4 +71,11 @@ export const theme: DefaultTheme = {
         lg: '992px',
         xl: '1200px',
     },
+    borderRadius: {
+        sm: '2px',
+        md: '4px',
+        lg: '8px',
+    },
 };
+
+export type Theme = typeof theme;
