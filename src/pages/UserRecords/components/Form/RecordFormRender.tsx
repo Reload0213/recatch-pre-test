@@ -38,18 +38,15 @@ const RecordFormRender = ({ field }: RecordFormRenderProps) => {
         case 'date':
             return (
                 <Form.Item key={dataIndex} label={label} name={dataIndex} rules={requiredRules}>
-                    <DatePicker
-                        placeholder={`${label}을(를) 선택하세요`}
-                        style={{ width: '100%' }}
-                        format="YYYY-MM-DD"
-                    />
+                    <DatePicker placeholder={label} style={{ width: 'auto' }} format="YYYY-MM-DD" />
                 </Form.Item>
             );
         case 'select':
             return (
                 <Form.Item key={dataIndex} label={label} name={dataIndex} rules={requiredRules}>
                     <Select
-                        placeholder={`${label}을(를) 선택하세요`}
+                        placeholder={label}
+                        style={{ width: 'auto', minWidth: 100 }}
                         options={options?.map((option) => ({ value: option, label: option }))}
                     />
                 </Form.Item>
