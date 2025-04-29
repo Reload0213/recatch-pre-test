@@ -116,6 +116,7 @@ const RecordFormModal = ({ isOpen, onClose, onSubmit, formValues }: RecordFormMo
             }
             width="48rem"
             centered
+            forceRender
         >
             <Divider style={{ margin: 0 }} />
             <Form
