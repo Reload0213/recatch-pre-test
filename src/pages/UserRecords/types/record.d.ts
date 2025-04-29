@@ -23,6 +23,6 @@ export const FIELD_CONFIGS: Field[] = [
     { type: 'text', label: '주소', dataIndex: 'address', required: false },
     { type: 'textarea', label: '메모', dataIndex: 'memo', required: false },
     { type: 'date', label: '가입일', dataIndex: 'joinDate', required: true },
-    { type: 'text', label: '직업', dataIndex: 'occupation', required: false, options: ['개발자', 'PO', '디자이너'] },
+    { type: 'select', label: '직업', dataIndex: 'occupation', required: false, options: ['개발자', 'PO', '디자이너'] },
     { type: 'checkbox', label: '이메일 수신 동의', dataIndex: 'emailConsent', required: false },
 ];
