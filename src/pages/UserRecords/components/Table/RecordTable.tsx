@@ -5,6 +5,7 @@ import { styled } from 'styled-components';
 
 // hooks
 import { useRecords } from '../../hooks/useRecords';
+import { useModal } from '../../../../hooks/useModal';
 
 // types
 import { Record, FIELD_CONFIGS } from '../../types/record.d';
@@ -48,6 +49,7 @@ const TableViewCheckbox = styled(Checkbox)(({ theme }) => ({
 
 const RecordTable = () => {
     const { records, editRecord, deleteRecord } = useRecords();
+    const { open: openModal } = useModal();
     const [popoverOpen, setPopoverOpen] = useState<string | null>(null);
     const [filteredState, setFilteredState] = useState<FilteredState>({});
 
@@ -61,10 +63,7 @@ const RecordTable = () => {
 
     const handleDelete = useCallback(
         (id: string) => {
-            if (window.confirm('정말로 삭제하시겠습니까?')) {
-                setPopoverOpen(null);
-                deleteRecord(id);
-            }
+            deleteRecord(id);
         },
         [deleteRecord]
     );
@@ -131,11 +130,27 @@ const RecordTable = () => {
                 render: (record: Record) => (
                     <Popover
                         content={
-                            <Space direction="vertical">
-                                <Button type="text" onClick={() => handleEdit(record)}>
+                            <Space style={{ width: 140 }} direction="vertical">
+                                <Button
+                                    style={{ width: '100%', justifyContent: 'left' }}
+                                    type="text"
+                                    onClick={() => handleEdit(record)}
+                                >
                                     수정
                                 </Button>
-                                <Button type="text" danger onClick={() => handleDelete(record.id)}>
+                                <Button
+                                    style={{ width: '100%', justifyContent: 'left' }}
+                                    type="text"
+                                    danger
+                                    onClick={() => {
+                                        openModal({
+                                            label: '삭제 확인',
+                                            content: '정말로 삭제하시겠습니까?',
+                                            onConfirm: () => handleDelete(record.id),
+                                        });
+                                        setPopoverOpen(null);
+                                    }}
+                                >
                                     삭제
                                 </Button>
                             </Space>
