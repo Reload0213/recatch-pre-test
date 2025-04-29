@@ -1,8 +1,8 @@
 import React from 'react';
-
 import { ConfigProvider as AntdConfigProvider } from 'antd';
 import { ThemeProvider } from 'styled-components';
 
+// styles
 import { theme } from '../styles/theme';
 
 interface ProvidersProps {
