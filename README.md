@@ -35,9 +35,9 @@ pnpm install
 cp .env.example .env
 ```
 
-## 환경 변수
+-   환경 변수
 
--   ## REACT_APP_STORAGE_TYPE: 데이터 저장 방식을 설정합니다.
+-   REACT_APP_STORAGE_TYPE: 데이터 저장 방식을 설정합니다.
     -   `in-memory`: 클라이언트 상태에 데이터를 저장합니다. 페이지 새로고침 시 초기 데이터로 초기화됩니다.
     -   `local-storage`: 브라우저의 로컬 스토리지에 데이터를 저장합니다. 페이지 새로고침 후에도 데이터가 유지됩니다.
 
