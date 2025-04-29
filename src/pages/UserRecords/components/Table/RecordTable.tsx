@@ -48,8 +48,9 @@ const TableViewCheckbox = styled(Checkbox)(({ theme }) => ({
 }));
 
 const RecordTable = () => {
-    const { records, editRecord, deleteRecord } = useRecords();
     const { open: openModal } = useModal();
+    const { records, editRecord, deleteRecord } = useRecords();
+
     const [popoverOpen, setPopoverOpen] = useState<string | null>(null);
     const [filteredState, setFilteredState] = useState<FilteredState>({});
 
@@ -165,7 +166,7 @@ const RecordTable = () => {
                 ),
             },
         ],
-        [records, filteredState, onFilterChange, popoverOpen, handleEdit, handleDelete]
+        [filteredState, records, onFilterChange, popoverOpen, handleEdit, openModal, handleDelete]
     );
 
     return <Table columns={columns} dataSource={filteredRecords} rowKey="id" pagination={{ pageSize: 10 }} />;
